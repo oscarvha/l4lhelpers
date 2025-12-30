@@ -1,0 +1,27 @@
+{
+    "name": "osd/l4lhelpers",
+    "description": "Reusable Laravel helpers and utils",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.1",
+        "intervention/image": "^3.11"
+    },
+    "autoload": {
+        "psr-4": {
+            "Osd\\L4lhelpers\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Osd\\L4lhelpers\\L4lHelpersServiceProvider"
+            ]
+        }
+    },
+    "authors": [
+        {
+            "name": "Oscar Sanchez"
+        }
+    ]
+}
