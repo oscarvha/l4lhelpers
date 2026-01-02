@@ -15,7 +15,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Osd\\L4lhelpers\\L4lHelpersServiceProvider"
+                "Osd\\L4lHelpers\\L4lHelpersServiceProvider"
             ]
         }
     },
