@@ -9,7 +9,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Osd\\L4lhelpers\\": "src/"
+            "Osd\\L4lHelpers\\": "src/"
         }
     },
     "extra": {
