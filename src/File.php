@@ -11,6 +11,7 @@ class File
     /**
      * @param string $disk
      * @param UploadedFile $file
+     * @param string $name
      * @param bool $timeInName
      * @param string $path
      * @return false|string
@@ -52,7 +53,7 @@ class File
      */
     public static function delete(string $disk, string $file)
     {
-        Storage::disk($disk)->delete($file);
+      $result =  Storage::disk($disk)->delete($file);
     }
 
     /**
@@ -71,5 +72,17 @@ class File
         }catch (\Exception $e) {
             return 'application/octet-stream';
         }
+    }
+
+    /**
+     * @param string $url
+     * @return string
+     */
+    public static function pathLaravelFromURL(string $url): string
+    {
+        $path = parse_url($url, PHP_URL_PATH);
+
+        return  str_replace('/storage/', '', $path);
+
     }
 }
