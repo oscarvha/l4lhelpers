@@ -2,11 +2,12 @@
 
 namespace Osd\L4lHelpers\Mail\Infrastructure;
 
+use Osd\L4lHelpers\Mail\Contracts\SmtpTransport;
 use RuntimeException;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\Transport;
 
-final class SymfonySmtpTransport
+final class SymfonySmtpTransport implements SmtpTransport
 {
     public function start(): void
     {
