@@ -5,7 +5,7 @@ namespace Osd\L4lHelpers\IP\Domain\ValueObject;
 
 final class IpInfo
 {
-    private function __construct(private string $ipAddress,
+    public function __construct(private string $ipAddress,
                                  private IpInfoGeoLocation $geoLocation)
     {}
 

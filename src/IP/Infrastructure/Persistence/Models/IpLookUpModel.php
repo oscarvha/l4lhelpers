@@ -3,6 +3,7 @@
 namespace Osd\L4lHelpers\IP\Infrastructure\Persistence\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Osd\L4lHelpers\IP\Domain\ValueObject\IpNetworkOwnerRange;
 
 class IpLookUpModel extends Model
@@ -34,4 +35,15 @@ class IpLookUpModel extends Model
 
 
     public $timestamps = false;
+
+    public function spamAssessment(): HasOne
+    {
+        return $this->hasOne(
+            IpSpamAssessmentModel::class,
+            'ip_lookup_id',
+            'id'
+        );
+    }
+
+
 }

@@ -5,10 +5,12 @@ namespace Osd\L4lHelpers;
 use Illuminate\Support\ServiceProvider;
 use Osd\L4lHelpers\IP\Application\GetIpLookup;
 use Osd\L4lHelpers\IP\Console\IPLookup;
+use Osd\L4lHelpers\IP\Domain\Contracts\IpSpamService;
 use Osd\L4lHelpers\IP\Domain\Contracts\UuidGenerator;
 use Osd\L4lHelpers\IP\Domain\Contracts\IpProvider;
 use Osd\L4lHelpers\IP\Domain\Repository\IpLookupConfigRepository;
 use Osd\L4lHelpers\IP\Domain\Repository\IpLookupRepository;
+use Osd\L4lHelpers\IP\Infrastructure\IpCheckSpamAdapter;
 use Osd\L4lHelpers\IP\Infrastructure\IpGuideProvider;
 use Osd\L4lHelpers\IP\Infrastructure\LaravelIpLookupConfigRepository;
 use Osd\L4lHelpers\IP\Infrastructure\Persistence\EloquentIpLookupRepository;
@@ -21,11 +23,14 @@ class L4lHelpersServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->bind(IpProvider::class, IpGuideProvider::class);
+
         $this->app->bind(UuidGenerator::class, SymfonyUuidGenerator::class);
 
         $this->app->bind(IpLookupRepository::class, EloquentIpLookupRepository::class);
 
         $this->app->bind(IpLookupConfigRepository::class, LaravelIpLookupConfigRepository::class);
+
+        $this->app->bind(IpSpamService::class, IpCheckSpamAdapter::class);
 
 
         $this->app->singleton(GetIpLookup::class);

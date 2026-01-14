@@ -3,7 +3,10 @@
 namespace Osd\L4lHelpers\IP\Console;
 
 use Illuminate\Console\Command;
+use Osd\IpCheckSpam\Application\Config\IpSpamConfig;
+use Osd\IpCheckSpam\Domain\DTO\IpSpamInput;
 use Osd\L4lHelpers\IP\Application\GetIpLookup;
+use Osd\L4lHelpers\IP\Domain\ValueObject\IpSpamAssessment;
 
 class IPLookup extends Command
 {
@@ -13,23 +16,18 @@ class IPLookup extends Command
     protected $description = 'Return IP info';
 
 
+    /**
+     * @return int
+     */
     public function handle(): int
     {
-
         $ip = $this->argument('ip');
-
-        if (!$ip) {
-            $this->error('IP is required');
-            return self::FAILURE;
-        }
 
         $service = app(GetIpLookup::class);
 
         $ipLookUp = $service->execute($ip);
 
-        $this->info("IP: " . $ipLookUp->ip());
-
-        return self::SUCCESS;
+        return Command::SUCCESS;
     }
 
 }

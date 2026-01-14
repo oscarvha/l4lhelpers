@@ -11,6 +11,14 @@ return [
         // - insert   →  insert only
         // - override → override the register if exists
 
-    ],
+        'refresh_ttl' => 604800,
 
+        'spam_analysis' => [
+            'enabled' => true,
+            'api_key' => '<API_KEY_HERE>',
+        ],
+
+    ],
 ];
+
+

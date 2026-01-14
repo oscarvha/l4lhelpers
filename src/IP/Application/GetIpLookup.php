@@ -3,22 +3,20 @@
 namespace Osd\L4lHelpers\IP\Application;
 
 use Osd\L4lHelpers\IP\Domain\Contracts\IpProvider;
-use Osd\L4lHelpers\IP\Domain\Contracts\UuidGenerator;
+use Osd\L4lHelpers\IP\Domain\Contracts\IpSpamService;
 use Osd\L4lHelpers\IP\Domain\Models\IpLookup;
 use Osd\L4lHelpers\IP\Domain\Repository\IpLookupConfigRepository;
 use Osd\L4lHelpers\IP\Domain\Repository\IpLookupRepository;
-use Osd\L4lHelpers\IP\Domain\ValueObject\IpInfo;
-use Osd\L4lHelpers\IP\Domain\ValueObject\IpLookupId;
-use Osd\L4lHelpers\IP\Domain\ValueObject\IpNetworkOwner;
-use Osd\L4lHelpers\IP\Domain\ValueObject\IpNetworkOwnerRange;
+use Osd\L4lHelpers\IP\Domain\ValueObject\IpSpamAssessment;
 
 final class GetIpLookup
 {
     public function __construct(
-        private IpProvider         $provider,
-        private UuidGenerator      $idGenerator,
-        private IpLookupRepository $ipLookupRepository,
-        private IpLookupConfigRepository $configRepository
+        private readonly IpProvider $provider,
+        private readonly IpLookupRepository $ipLookupRepository,
+        private readonly IpLookupConfigRepository $configRepository,
+        private readonly IpSpamService $spamService
+
     ) {}
 
     /**
@@ -27,42 +25,38 @@ final class GetIpLookup
      */
     public function execute(string $ip): IpLookup
     {
-        $data = $this->provider->fetch($ip);
+        $now = new \DateTimeImmutable();
+        $ttl = $this->configRepository->refreshTtl();
 
-        $info = IpInfo::fromArray($data);
-        $ownerData = $data['network']['autonomous_system'];
-        $network = $data['network'];
-        $range = new IpNetworkOwnerRange($network['cidr'], $network['hosts']['start'], $network['hosts']['end']);
-        $owner = new IpNetworkOwner(
-            $ownerData['asn'],
-            $ownerData['name'],
-            $ownerData['organization'],
-            $ownerData['country'],
-            $ownerData['rir'],
-            $range
-        );
+        if ($ttl !== null) {
+            $existing = $this->ipLookupRepository->findByIpAddress($ip);
 
-        $lookup = new IpLookup(
-            IpLookupId::fromString(
-                $this->idGenerator->generate()
-            ),
-            $ip,
-            $info,
-            $owner,
-            new \DateTimeImmutable(),
-            new \DateTimeImmutable(),
-        );
+            if ($existing !== null && !$existing->isExpired($ttl, $now)) {
+                    return $existing;
+            }
+        }
+
+        $ipLookUp = $this->provider->fetch($ip);
+
+        if ($this->configRepository->spamAnalysisEnabled() && empty(!$this->configRepository->spamAnalysisApiKey())) {
+
+            $spamAssessment = $this->spamService->analyze($ipLookUp);
+
+            $ipLookUp->setSpamAssessment($spamAssessment);
+        }
+
 
         if ($this->configRepository->shouldPersist()) {
 
             if ($this->configRepository->mode() === 'override') {
-                $this->ipLookupRepository->createOrUpdate($lookup);
+                $this->ipLookupRepository->createOrUpdate($ipLookUp);
             }else {
-                $this->ipLookupRepository->create($lookup);
+                $this->ipLookupRepository->create($ipLookUp);
             }
 
         }
 
-        return $lookup;
+        return $ipLookUp;
     }
+
 }

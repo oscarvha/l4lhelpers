@@ -21,4 +21,22 @@ final class LaravelIpLookupConfigRepository implements IpLookupConfigRepository
     {
         return config('l4lhelpers.ip_lookup.mode', 'default');
     }
+
+    /**
+     * @return int|null
+     */
+    public function refreshTtl(): ?int
+    {
+        return config('l4lhelpers.ip_lookup.refresh_ttl', null);
+    }
+
+    public function spamAnalysisEnabled(): bool
+    {
+        return config('l4lhelpers.ip_lookup.spam_analysis.enabled', false);
+    }
+
+    public function spamAnalysisApiKey(): ?string
+    {
+        return config('l4lhelpers.ip_lookup.spam_analysis.api_key', null);
+    }
 }

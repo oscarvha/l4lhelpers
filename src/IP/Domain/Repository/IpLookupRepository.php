@@ -8,4 +8,5 @@ interface IpLookupRepository
 {
     public function create(IpLookup $ipLookup) : void;
     public function createOrUpdate(IpLookup $ipLookup) : void;
+    public function findByIpAddress(string $ipAddress) : ?IpLookup;
 }
