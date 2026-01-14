@@ -44,10 +44,11 @@ final class EloquentIpLookupRepository implements IpLookupRepository
 
         $data = $this->mapToPersistence($ipLookup);
 
-        unset($data['id']);
-
         $model = IpLookupModel::updateOrCreate(
-            ['ip' => $ipLookup->ip()],
+            [
+                'ip' => $ipLookup->ip(),
+                'id' => $ipLookup->uuid()->toString()
+            ],
             $data
         );
 
