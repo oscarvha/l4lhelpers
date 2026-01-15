@@ -40,7 +40,9 @@ final class GetIpLookup
 
         if ($this->configRepository->limitByIp() && $this->configRepository->limitByIp()) {
             $count = $this->ipLookupRepository->countRequestByIp(Ip::real(), $this->configRepository->limitByIpDurationMinutes());
+
             if ($count >= $this->configRepository->limitByIp()) {
+
                 throw new IpRequestLimitExceededException(
                     $ip,
                     $this->configRepository->limitByIp(),

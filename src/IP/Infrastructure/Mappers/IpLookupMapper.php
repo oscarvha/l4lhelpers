@@ -4,6 +4,7 @@ namespace Osd\L4lHelpers\IP\Infrastructure\Mappers;
 
 use Osd\IpLookup\Domain\Models\IpLookup as ExternalIpLookup;
 use Osd\L4lHelpers\IP\Domain\Models\IpLookup;
+use Osd\L4lHelpers\IP\Domain\ValueObject\IpAddress;
 use Osd\L4lHelpers\IP\Domain\ValueObject\IpInfo;
 use Osd\L4lHelpers\IP\Domain\ValueObject\IpInfoGeoLocation;
 use Osd\L4lHelpers\IP\Domain\ValueObject\IpLookupId;
@@ -12,7 +13,7 @@ use Osd\L4lHelpers\IP\Domain\ValueObject\IpNetworkOwnerRange;
 
 final class IpLookupMapper
 {
-    public static function fromExternal(ExternalIpLookup $external): IpLookup
+    public static function fromExternal(ExternalIpLookup $external, IpAddress $ipAddress): IpLookup
     {
         $range = new IpNetworkOwnerRange(
             $external->owner()->range()->cidr(),
@@ -36,7 +37,6 @@ final class IpLookupMapper
         }
 
         $info = new IpInfo(
-            $external->ip() ,
             new IpInfoGeoLocation(
                 $geo->city(),
                 $geo->country(),
@@ -48,7 +48,7 @@ final class IpLookupMapper
 
         return IpLookup::create(
             IpLookupId::fromString($external->uuid()->toString()),
-            $external->ip(),
+            $ipAddress,
             $info,
             $owner
         );

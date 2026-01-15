@@ -5,8 +5,7 @@ namespace Osd\L4lHelpers\IP\Domain\ValueObject;
 
 final class IpInfo
 {
-    public function __construct(private string $ipAddress,
-                                 private IpInfoGeoLocation $geoLocation)
+    public function __construct(private IpInfoGeoLocation $geoLocation)
     {}
 
     /**
@@ -16,7 +15,6 @@ final class IpInfo
     public static function fromArray(array $data) : self
     {
         return new self(
-            $data['ip'],
             IpInfoGeoLocation::fromArray($data['location'])
         );
     }
