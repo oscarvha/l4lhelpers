@@ -5,6 +5,7 @@ namespace Osd\L4lHelpers\IP\Infrastructure\Persistence;
 use Illuminate\Support\Facades\Schema;
 use Osd\L4lHelpers\IP\Domain\Models\IpLookup;
 use Osd\L4lHelpers\IP\Domain\Repository\IpLookupRepository;
+use Osd\L4lHelpers\IP\Domain\ValueObject\IpAddress;
 use Osd\L4lHelpers\IP\Domain\ValueObject\IpInfo;
 use Osd\L4lHelpers\IP\Domain\ValueObject\IpLookupId;
 use Osd\L4lHelpers\IP\Domain\ValueObject\IpNetworkOwner;
@@ -172,7 +173,7 @@ final class EloquentIpLookupRepository implements IpLookupRepository
 
         return IpLookup::recreate(
             IpLookupId::fromString($record->id),
-            $record->ip,
+            IpAddress::fromString($record->ip),
             $info,
             $owner,
             new \DateTimeImmutable($record->created_at),
