@@ -23,11 +23,13 @@ final class EloquentIpLookupRepository implements IpLookupRepository
      * @param IpLookup $ipLookup
      * @return void
      */
-    public function create(IpLookup $ipLookup): void
+    public function create(IpLookup $ipLookup,
+                           ?string $requestedByIp = null
+    ): void
     {
         $this->checkTableExists();
 
-        $model = IpLookupModel::create($this->mapToPersistence($ipLookup));
+        $model = IpLookupModel::create($this->mapToPersistence($ipLookup, $requestedByIp));
 
         if ($ipLookup->getSpamAssessment() !== null) {
             $this->persistSpamAssessment($model, $ipLookup);
@@ -36,13 +38,16 @@ final class EloquentIpLookupRepository implements IpLookupRepository
 
     /**
      * @param IpLookup $ipLookup
+     * @param string|null $requestedByIp
      * @return void
      */
-    public function createOrUpdate(IpLookup $ipLookup): void
+    public function createOrUpdate(IpLookup $ipLookup,
+                                   ?string $requestedByIp = null
+    ): void
     {
         $this->checkTableExists();
 
-        $data = $this->mapToPersistence($ipLookup);
+        $data = $this->mapToPersistence($ipLookup, $requestedByIp);
 
         $model = IpLookupModel::updateOrCreate(
             [
@@ -86,10 +91,25 @@ final class EloquentIpLookupRepository implements IpLookupRepository
     }
 
     /**
+     * @param string $ip
+     * @param int $minutes
+     * @return int
+     */
+    public function countRequestByIp(string $ip, int $minutes) :int
+    {
+        $from = now()->subMinutes($minutes);
+
+        return IpLookupModel::where('requested_by_ip', $ip)
+            ->where('created_at', '>=', $from)
+            ->count();
+    }
+
+    /**
      * @param IpLookup $ipLookup
+     * @param string|null $requestedByIp
      * @return array
      */
-    private function mapToPersistence(IpLookup $ipLookup): array
+    private function mapToPersistence(IpLookup $ipLookup, string $requestedByIp = null): array
     {
         return [
             'id' => $ipLookup->uuid()->toString(),
@@ -112,6 +132,7 @@ final class EloquentIpLookupRepository implements IpLookupRepository
 
             'created_at' => $ipLookup->createdAt()->format('Y-m-d H:i:s'),
             'updated_at' => $ipLookup->updatedAt()->format('Y-m-d H:i:s'),
+            'requested_by_ip' => $requestedByIp,
         ];
     }
 
@@ -187,6 +208,7 @@ final class EloquentIpLookupRepository implements IpLookupRepository
             'provider' => $assessment->provider(),
             'model' => $assessment->model(),
             'created_at' => (new \DateTimeImmutable())->format('Y-m-d H:i:s'),
+            'requested_by_ip' => null,
         ];
 
         IpSpamAssessmentModel::updateOrCreate(

@@ -29,6 +29,7 @@ class IpLookUpModel extends Model
         'cidr',
         'network_start_ip',
         'network_end_ip',
+        'requested_by_ip',
         'created_at',
         'updated_at',
     ];

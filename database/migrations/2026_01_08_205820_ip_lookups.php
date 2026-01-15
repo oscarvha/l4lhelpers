@@ -27,6 +27,7 @@ return new class extends Migration
             $table->string('cidr')->nullable();
             $table->string('network_start_ip')->nullable();
             $table->string('network_end_ip')->nullable();
+            $table->string('requested_by_ip')->nullable();
             $table->timestamp('created_at');
             $table->timestamp('updated_at');
         });

@@ -18,6 +18,11 @@ return [
             'api_key' => '<API_KEY_HERE>',
         ],
 
+        'limits' => [
+            'by_ip' => 3,
+            'minutes' => 60,
+        ],
+
     ],
 ];
 

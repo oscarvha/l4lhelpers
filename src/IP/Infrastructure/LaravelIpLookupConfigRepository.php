@@ -39,4 +39,15 @@ final class LaravelIpLookupConfigRepository implements IpLookupConfigRepository
     {
         return config('l4lhelpers.ip_lookup.spam_analysis.api_key', null);
     }
+
+    public function limitByIp(): ?int
+    {
+        return config('l4lhelpers.ip_lookup.limits.by_ip', 0);
+    }
+
+    public function limitByIpDurationMinutes(): int
+    {
+        return config('l4lhelpers.ip_lookup.limits.minutes', 0);
+
+    }
 }

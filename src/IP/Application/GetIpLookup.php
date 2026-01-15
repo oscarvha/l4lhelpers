@@ -2,12 +2,14 @@
 
 namespace Osd\L4lHelpers\IP\Application;
 
+use Osd\L4lHelpers\IP\Application\Exceptions\IpRequestLimitExceededException;
 use Osd\L4lHelpers\IP\Domain\Contracts\IpProvider;
 use Osd\L4lHelpers\IP\Domain\Contracts\IpSpamService;
 use Osd\L4lHelpers\IP\Domain\Models\IpLookup;
 use Osd\L4lHelpers\IP\Domain\Repository\IpLookupConfigRepository;
 use Osd\L4lHelpers\IP\Domain\Repository\IpLookupRepository;
 use Osd\L4lHelpers\IP\Domain\ValueObject\IpSpamAssessment;
+use Osd\L4lHelpers\IP\IP;
 
 final class GetIpLookup
 {
@@ -36,6 +38,17 @@ final class GetIpLookup
             }
         }
 
+        if ($this->configRepository->limitByIp() && $this->configRepository->limitByIp()) {
+            $count = $this->ipLookupRepository->countRequestByIp(Ip::real(), $this->configRepository->limitByIpDurationMinutes());
+            if ($count >= $this->configRepository->limitByIp()) {
+                throw new IpRequestLimitExceededException(
+                    $ip,
+                    $this->configRepository->limitByIp(),
+                    $this->configRepository->limitByIpDurationMinutes()
+                );
+            }
+        }
+
         $ipLookUp = $this->provider->fetch($ip);
 
         if ($this->configRepository->spamAnalysisEnabled() && empty(!$this->configRepository->spamAnalysisApiKey())) {
@@ -49,9 +62,9 @@ final class GetIpLookup
         if ($this->configRepository->shouldPersist()) {
 
             if ($this->configRepository->mode() === 'override') {
-                $this->ipLookupRepository->createOrUpdate($ipLookUp);
+                $this->ipLookupRepository->createOrUpdate($ipLookUp,Ip::real());
             }else {
-                $this->ipLookupRepository->create($ipLookUp);
+                $this->ipLookupRepository->create($ipLookUp,Ip::real());
             }
 
         }

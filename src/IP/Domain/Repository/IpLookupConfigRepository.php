@@ -22,4 +22,8 @@ interface IpLookupConfigRepository
     public function spamAnalysisEnabled(): bool;
 
     public function spamAnalysisApiKey(): ?string;
+
+    public function limitByIp() : ?int;
+
+    public function limitByIpDurationMinutes() : int;
 }
