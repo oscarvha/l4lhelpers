@@ -12,7 +12,7 @@ use Osd\L4lHelpers\IP\Domain\ValueObject\IpNetworkOwner;
 use Osd\L4lHelpers\IP\Domain\ValueObject\IpNetworkOwnerRange;
 use Osd\L4lHelpers\IP\Infrastructure\Exceptions\MissingIpLookupTableException;
 use Osd\L4lHelpers\IP\Infrastructure\Mappers\IpSpamAssessmentMapper;
-use Osd\L4lHelpers\IP\Infrastructure\Persistence\Models\IpLookupModel;
+use Osd\L4lHelpers\IP\Infrastructure\Persistence\Models\IpLookUpModel;
 use Osd\L4lHelpers\IP\Infrastructure\Persistence\Models\IpSpamAssessmentModel;
 
 /**
